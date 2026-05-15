@@ -16,20 +16,38 @@ export default function UserProfile() {
   );
 
   return (
-    <Show when={user()} fallback={<p class="text-gray-500">User not found.</p>}>
+    <Show when={user()} fallback={<p class="text-stone-500 dark:text-stone-400 font-display">User not found.</p>}>
       {(u) => (
-        <div class="max-w-2xl">
-          <div class="flex items-center gap-4 mb-6">
-            <img src={u().avatarUrl || ''} alt="" class="w-16 h-16 rounded-full" />
-            <div>
-              <h1 class="text-xl font-bold text-gray-900 dark:text-white">{u().displayName || u().username}</h1>
-              <p class="text-sm text-gray-500">@{u().username}</p>
-              <p class="text-xs text-gray-400 mt-1">Joined {new Date(u().createdAt).toLocaleDateString()}</p>
+        <div class="max-w-2xl mx-auto">
+          <div class="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-card overflow-hidden animate-fade-in">
+            <div class="h-24 bg-gradient-to-br from-brand-600 via-brand-500 to-accent-500" />
+
+            <div class="px-6 pb-6">
+              <div class="flex items-end gap-4 -mt-10 mb-4">
+                <img
+                  src={u().avatarUrl || ''}
+                  alt=""
+                  class="w-20 h-20 rounded-full ring-4 ring-white dark:ring-stone-900 shadow-lg"
+                />
+                <div class="pb-1">
+                  <h1 class="font-display text-xl font-bold text-stone-900 dark:text-white">
+                    {u().displayName || u().username}
+                  </h1>
+                  <p class="text-sm font-mono text-stone-500 dark:text-stone-400">@{u().username}</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-4 text-xs font-mono text-stone-400 dark:text-stone-500 mb-4">
+                <span>Joined {new Date(u().createdAt).toLocaleDateString()}</span>
+              </div>
+
+              <Show when={u().bio}>
+                <p class="text-stone-700 dark:text-stone-300 border-t border-stone-100 dark:border-stone-800 pt-4">
+                  {u().bio}
+                </p>
+              </Show>
             </div>
           </div>
-          <Show when={u().bio}>
-            <p class="text-gray-700 dark:text-gray-300">{u().bio}</p>
-          </Show>
         </div>
       )}
     </Show>
