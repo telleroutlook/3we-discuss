@@ -29,7 +29,7 @@ export default function Layout(props: ParentProps) {
               when={currentUser()}
               fallback={
                 <Show when={!loading()}>
-                  <a href="/api/auth/github" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors">
+                  <a href="/api/auth/github" rel="external" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors">
                     <Github size={16} />
                     Sign in
                   </a>
