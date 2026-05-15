@@ -10,7 +10,7 @@ export interface BreadcrumbItem {
 export default function Breadcrumb(props: { items?: BreadcrumbItem[] }) {
   const allItems = () => [
     { label: '3WE', href: 'https://3we.org', external: true },
-    { label: 'Discuss', href: '/' },
+    { label: 'Home', href: '/' },
     ...(props.items || []),
   ];
 

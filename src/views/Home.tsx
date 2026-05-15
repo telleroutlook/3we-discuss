@@ -4,6 +4,7 @@ import type { Category, ApiResponse } from '../types';
 import { currentUser } from '../stores/authStore';
 import { Plus } from 'lucide-solid';
 import CategoryIcon from '../components/ui/CategoryIcon';
+import Breadcrumb from '../components/ui/Breadcrumb';
 
 async function fetchCategories(): Promise<Category[]> {
   const res = await fetch('/api/categories');
@@ -16,6 +17,7 @@ export default function Home() {
 
   return (
     <div>
+      <Breadcrumb />
       <section class="mb-10">
         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-800 via-brand-700 to-brand-900 p-8 md:p-12">
           <div class="absolute inset-0 bg-dotgrid opacity-20" />
