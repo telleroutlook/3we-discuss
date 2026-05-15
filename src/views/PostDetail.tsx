@@ -67,7 +67,17 @@ export default function PostDetail() {
               </For>
             </section>
 
-            <Show when={currentUser()}>
+            <Show
+              when={currentUser()}
+              fallback={
+                <div class="text-center py-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
+                  <p class="text-gray-600 dark:text-gray-400 mb-3">Sign in to join the discussion</p>
+                  <a href="/api/auth/github" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-100">
+                    Sign in with GitHub
+                  </a>
+                </div>
+              }
+            >
               <form onSubmit={submitReply} class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4">
                 <textarea
                   value={replyContent()}

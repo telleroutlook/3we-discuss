@@ -2,7 +2,7 @@ import { type ParentProps, Show } from 'solid-js';
 import { A } from '@solidjs/router';
 import { currentUser, logout, loading } from '../stores/authStore';
 import { darkMode, toggleDarkMode } from '../stores/appStore';
-import { Sun, Moon, Search, LogOut, MessageSquare } from 'lucide-solid';
+import { Sun, Moon, Search, LogOut, MessageSquare, Github } from 'lucide-solid';
 
 export default function Layout(props: ParentProps) {
   return (
@@ -25,26 +25,27 @@ export default function Layout(props: ParentProps) {
               </Show>
             </button>
 
-            <Show when={!loading()}>
-              <Show
-                when={currentUser()}
-                fallback={
-                  <a href="/api/auth/github" class="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700">
+            <Show
+              when={currentUser()}
+              fallback={
+                <Show when={!loading()}>
+                  <a href="/api/auth/github" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors">
+                    <Github size={16} />
                     Sign in
                   </a>
-                }
-              >
-                {(user) => (
-                  <div class="flex items-center gap-2">
-                    <A href={`/u/${user().username}`} class="flex items-center gap-2">
-                      <img src={user().avatarUrl || ''} alt="" class="w-8 h-8 rounded-full" />
-                    </A>
-                    <button onClick={logout} class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400">
-                      <LogOut size={18} />
-                    </button>
-                  </div>
-                )}
-              </Show>
+                </Show>
+              }
+            >
+              {(user) => (
+                <div class="flex items-center gap-2">
+                  <A href={`/u/${user().username}`} class="flex items-center gap-2">
+                    <img src={user().avatarUrl || ''} alt="" class="w-8 h-8 rounded-full" />
+                  </A>
+                  <button onClick={logout} class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400">
+                    <LogOut size={18} />
+                  </button>
+                </div>
+              )}
             </Show>
           </div>
         </div>
