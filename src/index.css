@@ -3,28 +3,28 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-brand-50: #f0fdfa;
-  --color-brand-100: #ccfbf1;
-  --color-brand-200: #99f6e4;
-  --color-brand-300: #5eead4;
-  --color-brand-400: #2dd4bf;
-  --color-brand-500: #14b8a6;
-  --color-brand-600: #0d9488;
-  --color-brand-700: #0f766e;
-  --color-brand-800: #115e59;
-  --color-brand-900: #134e4a;
-  --color-brand-950: #042f2e;
+  --color-brand-50: #fffbeb;
+  --color-brand-100: #fef3c7;
+  --color-brand-200: #fde68a;
+  --color-brand-300: #fcd34d;
+  --color-brand-400: #f0b840;
+  --color-brand-500: #e8a020;
+  --color-brand-600: #d97706;
+  --color-brand-700: #b45309;
+  --color-brand-800: #92400e;
+  --color-brand-900: #78350f;
+  --color-brand-950: #4a2c06;
 
-  --color-accent-50: #fffbeb;
-  --color-accent-100: #fef3c7;
-  --color-accent-200: #fde68a;
-  --color-accent-300: #fcd34d;
-  --color-accent-400: #fbbf24;
-  --color-accent-500: #f59e0b;
-  --color-accent-600: #d97706;
-  --color-accent-700: #b45309;
-  --color-accent-800: #92400e;
-  --color-accent-900: #78350f;
+  --color-accent-50: #fdf2f8;
+  --color-accent-100: #fce7f3;
+  --color-accent-200: #fbcfe8;
+  --color-accent-300: #f9a8d4;
+  --color-accent-400: #f472b6;
+  --color-accent-500: #c2410c;
+  --color-accent-600: #9a3412;
+  --color-accent-700: #7c2d12;
+  --color-accent-800: #6c2710;
+  --color-accent-900: #5a1e0e;
 
   --font-display: 'Outfit', system-ui, sans-serif;
   --font-sans: 'Source Sans 3', system-ui, sans-serif;
@@ -33,8 +33,8 @@
   --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04);
   --shadow-card-hover: 0 10px 25px -5px rgb(0 0 0 / 0.08), 0 4px 10px -6px rgb(0 0 0 / 0.04);
   --shadow-inset-soft: inset 0 2px 4px 0 rgb(0 0 0 / 0.03);
-  --shadow-glow-brand: 0 0 15px -3px rgb(13 148 136 / 0.3);
-  --shadow-glow-accent: 0 0 15px -3px rgb(217 119 6 / 0.3);
+  --shadow-glow-brand: 0 0 15px -3px rgb(232 160 32 / 0.3);
+  --shadow-glow-accent: 0 0 15px -3px rgb(194 65 12 / 0.3);
 
   --animate-fade-in: fadeIn 0.5s ease-out forwards;
   --animate-fade-in-up: fadeInUp 0.5s ease-out forwards;

@@ -16,8 +16,10 @@ export default {
       return env.ASSETS.fetch(request);
     }
 
+    const origin = env.ENVIRONMENT === 'production' ? env.BASE_URL : '*';
+
     if (request.method === 'OPTIONS') {
-      return new Response(null, { status: 204, headers: corsHeaders() });
+      return new Response(null, { status: 204, headers: corsHeaders(origin) });
     }
 
     try {
@@ -47,28 +49,29 @@ export default {
         response = Response.json({ success: false, error: 'Not found' }, { status: 404 });
       }
 
-      return addCors(response);
+      return addCors(response, origin);
     } catch (err) {
       console.error('Worker error:', err);
       return addCors(
-        Response.json({ success: false, error: 'Internal server error' }, { status: 500 })
+        Response.json({ success: false, error: 'Internal server error' }, { status: 500 }),
+        origin
       );
     }
   },
 } satisfies ExportedHandler<Env>;
 
-function corsHeaders(): HeadersInit {
+function corsHeaders(origin: string): HeadersInit {
   return {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Max-Age': '86400',
   };
 }
 
-function addCors(response: Response): Response {
+function addCors(response: Response, origin: string): Response {
   const headers = new Headers(response.headers);
-  headers.set('Access-Control-Allow-Origin', '*');
+  headers.set('Access-Control-Allow-Origin', origin);
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,

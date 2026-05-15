@@ -1,6 +1,7 @@
 import { useParams } from '@solidjs/router';
 import { createResource, Show } from 'solid-js';
 import type { User, ApiResponse } from '../types';
+import Breadcrumb from '../components/ui/Breadcrumb';
 
 export default function UserProfile() {
   const params = useParams<{ username: string }>();
@@ -19,6 +20,7 @@ export default function UserProfile() {
     <Show when={user()} fallback={<p class="text-stone-500 dark:text-stone-400 font-display">User not found.</p>}>
       {(u) => (
         <div class="max-w-2xl mx-auto">
+          <Breadcrumb items={[{ label: `@${u().username}`, href: `/u/${u().username}` }]} />
           <div class="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-card overflow-hidden animate-fade-in">
             <div class="h-24 bg-gradient-to-br from-brand-600 via-brand-500 to-accent-500" />
 

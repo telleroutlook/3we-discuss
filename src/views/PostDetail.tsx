@@ -4,6 +4,7 @@ import type { Post, Reply, ApiResponse } from '../types';
 import { currentUser } from '../stores/authStore';
 import { Github, Check } from 'lucide-solid';
 import { timeAgo } from '../utils/format';
+import Breadcrumb from '../components/ui/Breadcrumb';
 
 export default function PostDetail() {
   const params = useParams<{ id: string }>();
@@ -42,11 +43,24 @@ export default function PostDetail() {
     refetchPost();
   }
 
+  const breadcrumbItems = () => {
+    const p = post();
+    const items = [];
+    if (p?.category) {
+      items.push({ label: p.category.name, href: `/c/${p.category.slug}` });
+    }
+    if (p) {
+      items.push({ label: p.title.length > 40 ? p.title.slice(0, 40) + '…' : p.title, href: `/p/${p.id}` });
+    }
+    return items;
+  };
+
   return (
     <div class="max-w-3xl mx-auto">
       <Show when={post()}>
         {(p) => (
           <>
+            <Breadcrumb items={breadcrumbItems()} />
             <article class="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-card overflow-hidden animate-fade-in">
               <div class="h-1 bg-gradient-to-r from-brand-500 to-accent-500" />
 

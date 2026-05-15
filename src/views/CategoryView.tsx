@@ -2,8 +2,9 @@ import { createResource, For, Show } from 'solid-js';
 import { A, useParams } from '@solidjs/router';
 import type { Post, ApiResponse } from '../types';
 import { currentUser } from '../stores/authStore';
-import { ChevronLeft, MessageSquare } from 'lucide-solid';
+import { MessageSquare } from 'lucide-solid';
 import { timeAgo } from '../utils/format';
+import Breadcrumb from '../components/ui/Breadcrumb';
 
 export default function CategoryView() {
   const params = useParams<{ slug: string }>();
@@ -17,17 +18,16 @@ export default function CategoryView() {
     }
   );
 
+  const categoryName = () => params.slug.replace(/-/g, ' ');
+
   return (
     <div>
+      <Breadcrumb items={[{ label: categoryName(), href: `/c/${params.slug}` }]} />
+
       <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-3">
-          <A href="/" class="p-1.5 rounded-lg text-stone-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-950 transition-all duration-150">
-            <ChevronLeft size={20} />
-          </A>
-          <h1 class="font-display text-xl font-bold text-stone-900 dark:text-white capitalize">
-            {params.slug.replace(/-/g, ' ')}
-          </h1>
-        </div>
+        <h1 class="font-display text-xl font-bold text-stone-900 dark:text-white capitalize">
+          {categoryName()}
+        </h1>
         <Show when={currentUser()}>
           <A href="/new" class="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-display font-semibold text-sm active:scale-[0.97] transition-all duration-150 shadow-sm hover:shadow-md">
             New Post

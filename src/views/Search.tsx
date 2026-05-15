@@ -2,6 +2,7 @@ import { createSignal, createResource, For, Show } from 'solid-js';
 import { A, useSearchParams } from '@solidjs/router';
 import type { Post, ApiResponse } from '../types';
 import { Search as SearchIcon, SearchX } from 'lucide-solid';
+import Breadcrumb from '../components/ui/Breadcrumb';
 
 export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -24,6 +25,7 @@ export default function Search() {
 
   return (
     <div class="max-w-3xl mx-auto">
+      <Breadcrumb items={[{ label: 'Search', href: '/search' }]} />
       <form onSubmit={submit} class="mb-8">
         <div class="relative">
           <SearchIcon size={20} class="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 dark:text-stone-500 pointer-events-none" />

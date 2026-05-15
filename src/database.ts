@@ -112,14 +112,20 @@ export async function getPostsByCategory(
 
 export async function getPost(env: Env, postId: string): Promise<Post | null> {
   const row = await env.DB.prepare(`
-    SELECT p.*, u.username as author_username, u.display_name as author_display_name, u.avatar_url as author_avatar
+    SELECT p.*, u.username as author_username, u.display_name as author_display_name, u.avatar_url as author_avatar,
+           c.slug as category_slug, c.name as category_name
     FROM posts p JOIN users u ON p.author_id = u.id
+    LEFT JOIN categories c ON p.category_id = c.id
     WHERE p.id = ?
   `).bind(postId).first();
   if (!row) return null;
 
   await env.DB.prepare('UPDATE posts SET view_count = view_count + 1 WHERE id = ?').bind(postId).run();
-  return mapPost(row);
+  const post = mapPost(row);
+  if (row.category_slug) {
+    post.category = { id: post.categoryId, slug: row.category_slug as string, name: row.category_name as string, color: '', sortOrder: 0, postCount: 0, description: null, icon: null, createdAt: '' };
+  }
+  return post;
 }
 
 export async function createPost(

@@ -3,6 +3,7 @@ import { useNavigate } from '@solidjs/router';
 import type { Category, ApiResponse, Post } from '../types';
 import { currentUser } from '../stores/authStore';
 import { Github } from 'lucide-solid';
+import Breadcrumb from '../components/ui/Breadcrumb';
 
 export default function NewPost() {
   const navigate = useNavigate();
@@ -57,6 +58,7 @@ export default function NewPost() {
       </div>
     }>
       <div class="max-w-2xl mx-auto">
+        <Breadcrumb items={[{ label: 'New Discussion', href: '/new' }]} />
         <div class="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-card overflow-hidden animate-fade-in">
           <div class="h-1 bg-gradient-to-r from-brand-500 to-accent-500" />
 
@@ -96,7 +98,7 @@ export default function NewPost() {
               </div>
 
               <div>
-                <label class="block font-display text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">Content <span class="text-stone-400 font-normal">(Markdown supported)</span></label>
+                <label class="block font-display text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">Content</label>
                 <textarea
                   value={content()}
                   onInput={(e) => setContent(e.currentTarget.value)}

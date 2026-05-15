@@ -1,4 +1,4 @@
-import { type ParentProps, Show } from 'solid-js';
+import { type ParentProps, Show, ErrorBoundary } from 'solid-js';
 import { A } from '@solidjs/router';
 import { currentUser, logout, loading } from '../stores/authStore';
 import { darkMode, toggleDarkMode } from '../stores/appStore';
@@ -10,7 +10,7 @@ export default function Layout(props: ParentProps) {
       <header class="sticky top-0 z-50 backdrop-blur-lg bg-white/80 dark:bg-stone-900/80 border-b border-stone-200/50 dark:border-stone-800/50">
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <A href="/" class="flex items-center gap-2.5 font-display font-bold text-lg text-stone-900 dark:text-white">
-            <MessageSquare size={24} class="text-accent-500" />
+            <MessageSquare size={24} class="text-brand-500" />
             <span>3WE Discuss</span>
           </A>
 
@@ -53,7 +53,15 @@ export default function Layout(props: ParentProps) {
       </header>
 
       <main class="max-w-7xl mx-auto px-6 py-8">
-        {props.children}
+        <ErrorBoundary fallback={(err) => (
+          <div class="text-center py-16">
+            <h2 class="font-display text-xl font-bold text-stone-900 dark:text-white mb-2">Something went wrong</h2>
+            <p class="text-stone-500 dark:text-stone-400 text-sm">{err.message || 'An unexpected error occurred.'}</p>
+            <a href="/" class="inline-block mt-4 text-sm font-medium text-brand-600 hover:text-brand-700">Return home</a>
+          </div>
+        )}>
+          {props.children}
+        </ErrorBoundary>
       </main>
     </div>
   );
