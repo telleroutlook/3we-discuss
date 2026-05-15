@@ -16,15 +16,15 @@
     {
       "binding": "DB",
       "database_name": "3we-discuss-db",
-      "database_id": "TO_BE_CREATED"
+      "database_id": "b275bd5d-d87a-42b7-8e94-6bfac053a3ae"
     }
   ],
 
   "kv_namespaces": [
     {
       "binding": "KV",
-      "id": "TO_BE_CREATED",
-      "preview_id": "TO_BE_CREATED"
+      "id": "64eefa977e2b4bf79f61d39fa02be9b2",
+      "preview_id": "64eefa977e2b4bf79f61d39fa02be9b2"
     }
   ],
 
@@ -38,6 +38,20 @@
 
   "env": {
     "production": {
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "3we-discuss-db",
+          "database_id": "b275bd5d-d87a-42b7-8e94-6bfac053a3ae"
+        }
+      ],
+      "kv_namespaces": [
+        {
+          "binding": "KV",
+          "id": "64eefa977e2b4bf79f61d39fa02be9b2",
+          "preview_id": "64eefa977e2b4bf79f61d39fa02be9b2"
+        }
+      ],
       "vars": {
         "APP_NAME": "3WE Discuss",
         "APP_VERSION": "0.1.0",
