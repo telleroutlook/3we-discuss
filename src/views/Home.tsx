@@ -1,6 +1,7 @@
-import { createResource, For } from 'solid-js';
+import { createResource, For, Show } from 'solid-js';
 import { A } from '@solidjs/router';
 import type { Category, ApiResponse } from '../types';
+import { currentUser } from '../stores/authStore';
 
 async function fetchCategories(): Promise<Category[]> {
   const res = await fetch('/api/categories');
@@ -13,9 +14,16 @@ export default function Home() {
 
   return (
     <div>
-      <div class="mb-8">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">3WE Robot Platform Discussions</h1>
-        <p class="mt-1 text-gray-600 dark:text-gray-400">Ask questions, share ideas, and connect with the community.</p>
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">3WE Robot Platform Discussions</h1>
+          <p class="mt-1 text-gray-600 dark:text-gray-400">Ask questions, share ideas, and connect with the community.</p>
+        </div>
+        <Show when={currentUser()}>
+          <A href="/new" class="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 whitespace-nowrap">
+            New Post
+          </A>
+        </Show>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

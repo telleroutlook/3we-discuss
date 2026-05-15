@@ -9,6 +9,7 @@ export default function NewPost() {
   const [content, setContent] = createSignal('');
   const [categoryId, setCategoryId] = createSignal('');
   const [submitting, setSubmitting] = createSignal(false);
+  const [error, setError] = createSignal('');
 
   const [categories] = createResource(async () => {
     const res = await fetch('/api/categories');
@@ -18,26 +19,49 @@ export default function NewPost() {
 
   async function submit(e: Event) {
     e.preventDefault();
-    if (!title().trim() || !content().trim() || !categoryId()) return;
+    setError('');
+    if (!categoryId()) { setError('Please select a category'); return; }
+    if (!title().trim()) { setError('Please enter a title'); return; }
+    if (!content().trim()) { setError('Please enter content'); return; }
 
     setSubmitting(true);
-    const res = await fetch('/api/posts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ categoryId: categoryId(), title: title(), content: content() }),
-    });
+    try {
+      const res = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ categoryId: categoryId(), title: title(), content: content() }),
+      });
 
-    if (res.ok) {
       const json: ApiResponse<Post> = await res.json();
-      navigate(`/p/${json.data!.id}`);
+      if (res.ok && json.data) {
+        navigate(`/p/${json.data.id}`);
+      } else {
+        setError(json.error || `Failed to create post (${res.status})`);
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   }
 
   return (
-    <Show when={currentUser()} fallback={<p class="text-gray-500">Please sign in to create a post.</p>}>
+    <Show when={currentUser()} fallback={
+      <div class="text-center py-12">
+        <p class="text-gray-600 dark:text-gray-400 mb-4">Please sign in to create a post.</p>
+        <a href="/api/auth/github" rel="external" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg text-sm font-medium">
+          Sign in with GitHub
+        </a>
+      </div>
+    }>
       <div class="max-w-2xl">
         <h1 class="text-xl font-bold text-gray-900 dark:text-white mb-6">New Discussion</h1>
+
+        <Show when={error()}>
+          <div class="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
+            {error()}
+          </div>
+        </Show>
 
         <form onSubmit={submit} class="space-y-4">
           <div>
