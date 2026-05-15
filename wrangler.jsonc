@@ -1,0 +1,52 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "3we-discuss",
+  "compatibility_date": "2025-05-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "src/worker.ts",
+
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "3we-discuss-db",
+      "database_id": "TO_BE_CREATED"
+    }
+  ],
+
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "TO_BE_CREATED",
+      "preview_id": "TO_BE_CREATED"
+    }
+  ],
+
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "invocation_logs": true
+    }
+  },
+
+  "env": {
+    "production": {
+      "vars": {
+        "APP_NAME": "3WE Discuss",
+        "APP_VERSION": "0.1.0",
+        "ENVIRONMENT": "production",
+        "BASE_URL": "https://discussion.3we.org"
+      },
+      "routes": [
+        { "pattern": "discussion.3we.org", "custom_domain": true }
+      ]
+    }
+  }
+}
