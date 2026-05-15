@@ -20,6 +20,9 @@ export async function handleReplies(request: Request, env: Env, path: string): P
     if (!body.content) {
       return Response.json({ success: false, error: 'Content required' }, { status: 400 });
     }
+    if (body.content.length > 50000) {
+      return Response.json({ success: false, error: 'Content too long (max 50000 characters)' }, { status: 400 });
+    }
 
     const reply = await createReply(env, repliesMatch[1], user.id, body.content, body.parentReplyId);
     return Response.json({ success: true, data: reply }, { status: 201 });

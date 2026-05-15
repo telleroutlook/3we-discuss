@@ -27,6 +27,12 @@ export async function handlePosts(request: Request, env: Env, path: string): Pro
     if (!body.categoryId || !body.title || !body.content) {
       return Response.json({ success: false, error: 'Missing fields' }, { status: 400 });
     }
+    if (body.title.length > 200) {
+      return Response.json({ success: false, error: 'Title too long (max 200 characters)' }, { status: 400 });
+    }
+    if (body.content.length > 50000) {
+      return Response.json({ success: false, error: 'Content too long (max 50000 characters)' }, { status: 400 });
+    }
 
     const post = await createPost(env, user.id, body.categoryId, body.title, body.content);
     return Response.json({ success: true, data: post }, { status: 201 });

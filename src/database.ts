@@ -16,7 +16,7 @@ export function mapCategory(row: Record<string, unknown>): Category {
 }
 
 export function mapPost(row: Record<string, unknown>): Post {
-  return {
+  const post: Post = {
     id: row.id as string,
     categoryId: row.category_id as string,
     authorId: row.author_id as string,
@@ -31,10 +31,24 @@ export function mapPost(row: Record<string, unknown>): Post {
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
   };
+  if (row.author_username) {
+    post.author = {
+      id: row.author_id as string,
+      githubId: 0,
+      username: row.author_username as string,
+      displayName: (row.author_display_name as string | null) || null,
+      avatarUrl: (row.author_avatar as string | null) || null,
+      bio: null,
+      isAdmin: false,
+      createdAt: '',
+      lastActive: '',
+    };
+  }
+  return post;
 }
 
 export function mapReply(row: Record<string, unknown>): Reply {
-  return {
+  const reply: Reply = {
     id: row.id as string,
     postId: row.post_id as string,
     authorId: row.author_id as string,
@@ -45,6 +59,20 @@ export function mapReply(row: Record<string, unknown>): Reply {
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
   };
+  if (row.author_username) {
+    reply.author = {
+      id: row.author_id as string,
+      githubId: 0,
+      username: row.author_username as string,
+      displayName: (row.author_display_name as string | null) || null,
+      avatarUrl: (row.author_avatar as string | null) || null,
+      bio: null,
+      isAdmin: false,
+      createdAt: '',
+      lastActive: '',
+    };
+  }
+  return reply;
 }
 
 export async function getCategories(env: Env): Promise<Category[]> {
@@ -69,7 +97,7 @@ export async function getPostsByCategory(
   ).bind(category.id).first();
 
   const { results } = await env.DB.prepare(`
-    SELECT p.*, u.username as author_username, u.avatar_url as author_avatar
+    SELECT p.*, u.username as author_username, u.display_name as author_display_name, u.avatar_url as author_avatar
     FROM posts p JOIN users u ON p.author_id = u.id
     WHERE p.category_id = ?
     ORDER BY p.is_pinned DESC, p.created_at DESC
@@ -84,7 +112,7 @@ export async function getPostsByCategory(
 
 export async function getPost(env: Env, postId: string): Promise<Post | null> {
   const row = await env.DB.prepare(`
-    SELECT p.*, u.username as author_username, u.avatar_url as author_avatar
+    SELECT p.*, u.username as author_username, u.display_name as author_display_name, u.avatar_url as author_avatar
     FROM posts p JOIN users u ON p.author_id = u.id
     WHERE p.id = ?
   `).bind(postId).first();
@@ -122,7 +150,7 @@ export async function getReplies(
 ): Promise<Reply[]> {
   const offset = (page - 1) * limit;
   const { results } = await env.DB.prepare(`
-    SELECT r.*, u.username as author_username, u.avatar_url as author_avatar
+    SELECT r.*, u.username as author_username, u.display_name as author_display_name, u.avatar_url as author_avatar
     FROM replies r JOIN users u ON r.author_id = u.id
     WHERE r.post_id = ?
     ORDER BY r.created_at ASC
@@ -167,28 +195,34 @@ export async function castVote(
   if (existing) {
     const oldValue = existing.value as number;
     if (oldValue === value) {
-      await env.DB.prepare(
-        'DELETE FROM votes WHERE user_id = ? AND target_type = ? AND target_id = ?'
-      ).bind(userId, targetType, targetId).run();
-      await env.DB.prepare(
-        `UPDATE ${table} SET vote_count = vote_count - ? WHERE id = ?`
-      ).bind(value, targetId).run();
+      await env.DB.batch([
+        env.DB.prepare(
+          'DELETE FROM votes WHERE user_id = ? AND target_type = ? AND target_id = ?'
+        ).bind(userId, targetType, targetId),
+        env.DB.prepare(
+          `UPDATE ${table} SET vote_count = vote_count - ? WHERE id = ?`
+        ).bind(value, targetId),
+      ]);
     } else {
-      await env.DB.prepare(
-        'UPDATE votes SET value = ? WHERE user_id = ? AND target_type = ? AND target_id = ?'
-      ).bind(value, userId, targetType, targetId).run();
-      await env.DB.prepare(
-        `UPDATE ${table} SET vote_count = vote_count + ? WHERE id = ?`
-      ).bind(value * 2, targetId).run();
+      await env.DB.batch([
+        env.DB.prepare(
+          'UPDATE votes SET value = ? WHERE user_id = ? AND target_type = ? AND target_id = ?'
+        ).bind(value, userId, targetType, targetId),
+        env.DB.prepare(
+          `UPDATE ${table} SET vote_count = vote_count + ? WHERE id = ?`
+        ).bind(value * 2, targetId),
+      ]);
     }
   } else {
     const id = generateId();
-    await env.DB.prepare(
-      'INSERT INTO votes (id, user_id, target_type, target_id, value) VALUES (?, ?, ?, ?, ?)'
-    ).bind(id, userId, targetType, targetId, value).run();
-    await env.DB.prepare(
-      `UPDATE ${table} SET vote_count = vote_count + ? WHERE id = ?`
-    ).bind(value, targetId).run();
+    await env.DB.batch([
+      env.DB.prepare(
+        'INSERT INTO votes (id, user_id, target_type, target_id, value) VALUES (?, ?, ?, ?, ?)'
+      ).bind(id, userId, targetType, targetId, value),
+      env.DB.prepare(
+        `UPDATE ${table} SET vote_count = vote_count + ? WHERE id = ?`
+      ).bind(value, targetId),
+    ]);
   }
 }
 
@@ -199,14 +233,23 @@ export async function searchPosts(
   limit: number = 20
 ): Promise<{ posts: Post[]; total: number }> {
   const offset = (page - 1) * limit;
+  const sanitized = '"' + query.replace(/"/g, '""') + '"';
+
+  const countResult = await env.DB.prepare(`
+    SELECT COUNT(*) as count FROM posts p
+    JOIN posts_fts ON posts_fts.rowid = p.rowid
+    WHERE posts_fts MATCH ?
+  `).bind(sanitized).first();
+
   const { results } = await env.DB.prepare(`
     SELECT p.* FROM posts p
     JOIN posts_fts ON posts_fts.rowid = p.rowid
     WHERE posts_fts MATCH ?
     ORDER BY rank
     LIMIT ? OFFSET ?
-  `).bind(query, limit, offset).all();
-  return { posts: results.map(mapPost), total: results.length };
+  `).bind(sanitized, limit, offset).all();
+
+  return { posts: results.map(mapPost), total: (countResult?.count as number) || 0 };
 }
 
 export async function upsertUser(

@@ -1,8 +1,12 @@
 import { createSignal } from 'solid-js';
 
-const [darkMode, setDarkMode] = createSignal(
-  typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
-);
+const prefersDark = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+const [darkMode, setDarkMode] = createSignal(prefersDark);
+
+if (prefersDark) {
+  document.documentElement.classList.add('dark');
+}
 
 export function toggleDarkMode() {
   setDarkMode(!darkMode());

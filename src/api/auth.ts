@@ -10,8 +10,9 @@ export async function handleAuth(request: Request, env: Env, path: string): Prom
   return new Response(JSON.stringify({ success: false, error: 'Not found' }), { status: 404 });
 }
 
-function handleGitHubRedirect(env: Env): Response {
+async function handleGitHubRedirect(env: Env): Promise<Response> {
   const state = generateId();
+  await env.KV.put(`oauth_state:${state}`, '1', { expirationTtl: 600 });
   const params = new URLSearchParams({
     client_id: env.GITHUB_CLIENT_ID,
     redirect_uri: `${env.BASE_URL}/api/auth/github/callback`,
@@ -24,9 +25,17 @@ function handleGitHubRedirect(env: Env): Response {
 async function handleGitHubCallback(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
-  if (!code) {
-    return Response.redirect(`${env.BASE_URL}/login?error=missing_code`, 302);
+  const state = url.searchParams.get('state');
+
+  if (!code || !state) {
+    return Response.redirect(`${env.BASE_URL}/login?error=missing_params`, 302);
   }
+
+  const storedState = await env.KV.get(`oauth_state:${state}`);
+  if (!storedState) {
+    return Response.redirect(`${env.BASE_URL}/login?error=invalid_state`, 302);
+  }
+  await env.KV.delete(`oauth_state:${state}`);
 
   const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
     method: 'POST',
@@ -68,6 +77,9 @@ async function handleMe(request: Request, env: Env): Promise<Response> {
 }
 
 async function handleLogout(request: Request, env: Env): Promise<Response> {
+  if (request.method !== 'POST') {
+    return Response.json({ success: false, error: 'Method not allowed' }, { status: 405 });
+  }
   const cookie = request.headers.get('Cookie');
   if (cookie) {
     const match = cookie.match(/session=([^;]+)/);

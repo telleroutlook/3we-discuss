@@ -10,11 +10,11 @@ export async function handleVotes(request: Request, env: Env, path: string): Pro
   const user = await getSessionUser(request, env);
   if (!user) return Response.json({ success: false, error: 'Unauthorized' }, { status: 401 });
 
-  const body = await request.json() as { targetType: 'post' | 'reply'; targetId: string; value: 1 | -1 };
-  if (!body.targetType || !body.targetId || ![1, -1].includes(body.value)) {
+  const body = await request.json() as { targetType: string; targetId: string; value: number };
+  if (!['post', 'reply'].includes(body.targetType) || !body.targetId || ![1, -1].includes(body.value)) {
     return Response.json({ success: false, error: 'Invalid vote data' }, { status: 400 });
   }
 
-  await castVote(env, user.id, body.targetType, body.targetId, body.value);
+  await castVote(env, user.id, body.targetType as 'post' | 'reply', body.targetId, body.value as 1 | -1);
   return Response.json({ success: true });
 }
